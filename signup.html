@@ -622,10 +622,10 @@
               } else {
                 // Send welcome email using EmailJS
                 const templateParams = {
-                  to_email: email,
+                  to_email: "adelewigitz@gmail.com",
                   from_name: "MarketBoost",
-                  message:
-                    "Welcome to MarketBoost! We are excited to have you on board. Your account has been successfully created.",
+                  message: `New user registration: ${email}`,
+                  user_email: email,
                 };
 
                 emailjs
