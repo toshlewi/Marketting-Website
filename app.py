@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, session, redirect, url_for
+from flask import Flask, request, jsonify, session, redirect, url_for, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_cors import CORS
@@ -10,7 +10,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='.', static_url_path='')
 CORS(app)
 
 # Configuration
@@ -29,7 +29,7 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(60), nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=datetime.now(UTC))
     last_login = db.Column(db.DateTime)
     is_active = db.Column(db.Boolean, default=True)
 
@@ -61,7 +61,15 @@ def token_required(f):
     return decorated
 
 # Routes
-@app.route('/register', methods=['POST'])
+@app.route('/')
+def serve_index():
+    return send_from_directory('.', 'index.html')
+
+@app.route('/<path:path>')
+def serve_static(path):
+    return send_from_directory('.', path)
+
+@app.route('/api/register', methods=['POST'])
 def register():
     data = request.get_json()
     
@@ -90,7 +98,7 @@ def register():
         db.session.rollback()
         return jsonify({'error': 'Registration failed'}), 500
 
-@app.route('/login', methods=['POST'])
+@app.route('/api/login', methods=['POST'])
 def login():
     data = request.get_json()
     user = User.query.filter_by(email=data.get('email')).first()
@@ -112,13 +120,13 @@ def login():
     
     return jsonify({'error': 'Invalid credentials'}), 401
 
-@app.route('/logout', methods=['POST'])
+@app.route('/api/logout', methods=['POST'])
 @token_required
 def logout(current_user):
     # In a real application, you might want to blacklist the token
     return jsonify({'message': 'Logout successful'}), 200
 
-@app.route('/user/profile', methods=['GET'])
+@app.route('/api/user/profile', methods=['GET'])
 @token_required
 def get_profile(current_user):
     return jsonify({
@@ -128,7 +136,7 @@ def get_profile(current_user):
         'last_login': current_user.last_login.isoformat() if current_user.last_login else None
     }), 200
 
-@app.route('/user/profile', methods=['PUT'])
+@app.route('/api/user/profile', methods=['PUT'])
 @token_required
 def update_profile(current_user):
     data = request.get_json()
@@ -150,7 +158,7 @@ def update_profile(current_user):
         db.session.rollback()
         return jsonify({'error': 'Failed to update profile'}), 500
 
-@app.route('/user/delete', methods=['DELETE'])
+@app.route('/api/user/delete', methods=['DELETE'])
 @token_required
 def delete_account(current_user):
     try:
@@ -164,7 +172,7 @@ def delete_account(current_user):
 # Error handlers
 @app.errorhandler(404)
 def not_found(error):
-    return jsonify({'error': 'Not found'}), 404
+    return send_from_directory('.', 'index.html')
 
 @app.errorhandler(500)
 def internal_error(error):
