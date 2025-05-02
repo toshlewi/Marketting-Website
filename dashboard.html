@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard | MarketBoost</title>
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+      :root {
+        --primary-color: #4f46e5;
+        --primary-dark: #4338ca;
+        --secondary-color: #10b981;
+        --text-color: #1f2937;
+        --bg-color: #f9fafb;
+        --bg-card: #ffffff;
+        --border-color: #e5e7eb;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      body {
+        background-color: var(--bg-color);
+        color: var(--text-color);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 1rem;
+      }
+
+      header {
+        padding: 1.5rem 0;
+        background-color: var(--bg-card);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      }
+
+      .navbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .logo {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--primary-color);
+        text-decoration: none;
+      }
+
+      .logo span {
+        color: var(--secondary-color);
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 2rem;
+      }
+
+      .nav-links a {
+        text-decoration: none;
+        color: var(--text-color);
+        font-weight: 500;
+        transition: color 0.3s ease;
+      }
+
+      .nav-links a:hover {
+        color: var(--primary-color);
+      }
+
+      main {
+        flex: 1;
+        display: flex;
+        padding: 2rem 0;
+      }
+
+      .sidebar {
+        width: 250px;
+        background-color: var(--bg-card);
+        padding: 1.5rem;
+        border-right: 1px solid var(--border-color);
+      }
+
+      .sidebar h2 {
+        margin-bottom: 1.5rem;
+        font-size: 1.25rem;
+        color: var(--text-color);
+      }
+
+      .sidebar ul {
+        list-style: none;
+      }
+
+      .sidebar li {
+        margin-bottom: 0.75rem;
+      }
+
+      .sidebar a {
+        text-decoration: none;
+        color: var(--text-color);
+        font-weight: 500;
+        transition: color 0.3s ease;
+      }
+
+      .sidebar a:hover {
+        color: var(--primary-color);
+      }
+
+      .dashboard-content {
+        flex: 1;
+        padding: 0 1.5rem;
+      }
+
+      .dashboard-header {
+        margin-bottom: 2rem;
+      }
+
+      .dashboard-header h1 {
+        font-size: 2rem;
+        color: var(--text-color);
+        margin-bottom: 0.5rem;
+      }
+
+      .dashboard-header p {
+        color: #6b7280;
+        font-size: 1rem;
+      }
+
+      .dashboard-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 1.5rem;
+      }
+
+      .card {
+        background-color: var(--bg-card);
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        padding: 1.5rem;
+      }
+
+      .card h3 {
+        font-size: 1.25rem;
+        color: var(--text-color);
+        margin-bottom: 0.75rem;
+      }
+
+      .card p {
+        color: #6b7280;
+        font-size: 0.95rem;
+      }
+
+      footer {
+        background-color: var(--bg-card);
+        padding: 1.5rem 0;
+        text-align: center;
+        font-size: 0.9rem;
+        color: #6b7280;
+        border-top: 1px solid var(--border-color);
+      }
+
+      @media (max-width: 768px) {
+        main {
+          flex-direction: column;
+        }
+
+        .sidebar {
+          width: 100%;
+          border-right: none;
+          border-bottom: 1px solid var(--border-color);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="container">
+        <nav class="navbar">
+          <a href="index.html" class="logo">Market<span>Boost</span></a>
+          <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="services.html">Services</a>
+            <a href="about.html">About</a>
+            <a href="contact.html">Contact</a>
+          </div>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <div class="sidebar">
+        <h2>Dashboard</h2>
+        <ul>
+          <li><a href="#overview">Overview</a></li>
+          <li><a href="#analytics">Analytics</a></li>
+          <li><a href="#reports">Reports</a></li>
+          <li><a href="#settings">Settings</a></li>
+        </ul>
+      </div>
+
+      <div class="dashboard-content">
+        <div class="dashboard-header">
+          <h1>Welcome to Your Dashboard</h1>
+          <p>Here's an overview of your marketing performance.</p>
+        </div>
+
+        <div class="dashboard-cards">
+          <div class="card">
+            <h3>Total Visitors</h3>
+            <p>1,234</p>
+          </div>
+          <div class="card">
+            <h3>Conversion Rate</h3>
+            <p>3.2%</p>
+          </div>
+          <div class="card">
+            <h3>Revenue</h3>
+            <p>$12,345</p>
+          </div>
+          <div class="card">
+            <h3>Active Campaigns</h3>
+            <p>5</p>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer>
+      <div class="container">
+        <p>&copy; 2025 MarketBoost. All rights reserved.</p>
+      </div>
+    </footer>
+  </body>
+</html>
