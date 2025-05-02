@@ -2,20 +2,23 @@ from flask import Flask, request, jsonify, session, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_cors import CORS
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, UTC
 import os
 import jwt
 from functools import wraps
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = Flask(__name__)
 CORS(app)
 
 # Configuration
-app.config['SECRET_KEY'] = os.urandom(24)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'your-secret-key-here')
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'sqlite:///users.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['JWT_SECRET_KEY'] = os.urandom(24)
-app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=1)
+app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY', 'your-jwt-secret-key')
+app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(days=1)
 
 # Initialize extensions
 db = SQLAlchemy(app)
@@ -90,34 +93,24 @@ def register():
 @app.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
+    user = User.query.filter_by(email=data.get('email')).first()
     
-    # Validate input
-    if not data or not data.get('email') or not data.get('password'):
-        return jsonify({'error': 'Email and password are required'}), 400
-    
-    # Find user
-    user = User.query.filter_by(email=data['email']).first()
-    if not user or not bcrypt.check_password_hash(user.password, data['password']):
-        return jsonify({'error': 'Invalid email or password'}), 401
-    
-    # Update last login
-    user.last_login = datetime.utcnow()
-    db.session.commit()
-    
-    # Generate JWT token
-    token = jwt.encode({
-        'user_id': user.id,
-        'exp': datetime.utcnow() + app.config['JWT_ACCESS_TOKEN_EXPIRES']
-    }, app.config['JWT_SECRET_KEY'], algorithm='HS256')
-    
-    return jsonify({
-        'message': 'Login successful',
-        'token': token,
-        'user': {
-            'id': user.id,
+    if user and bcrypt.check_password_hash(user.password, data.get('password')):
+        user.last_login = datetime.now(UTC)
+        db.session.commit()
+        
+        token = jwt.encode({
+            'user_id': user.id,
+            'email': user.email,
+            'exp': datetime.now(UTC) + app.config['JWT_ACCESS_TOKEN_EXPIRES']
+        }, app.config['JWT_SECRET_KEY'])
+        
+        return jsonify({
+            'token': token,
             'email': user.email
-        }
-    }), 200
+        }), 200
+    
+    return jsonify({'error': 'Invalid credentials'}), 401
 
 @app.route('/logout', methods=['POST'])
 @token_required
@@ -178,4 +171,6 @@ def internal_error(error):
     return jsonify({'error': 'Internal server error'}), 500
 
 if __name__ == '__main__':
-    app.run(debug=False)
+    with app.app_context():
+        db.create_all()
+    app.run(host='0.0.0.0', port=int(os.getenv('PORT', 5000)))
