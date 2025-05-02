@@ -3,520 +3,1179 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Digital Service Packages</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Interactive Rate Card</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
-        
-        :root {
-            --primary-color: #4361ee;
-            --secondary-color: #3f37c9;
-            --accent-color: #f72585;
-            --light-accent: #ff70a6;
-            --text-color: #2b2d42;
-            --light-text: #8d99ae;
-            --bg-color: #f8f9fa;
-            --card-bg: rgba(255, 255, 255, 0.95);
-            --border-radius: 12px;
-            --box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
-            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-        }
-        
         * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
+            font-family: 'Arial', sans-serif;
         }
         
         body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            line-height: 1.7;
-            padding: 0;
-            background-image: url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2000&q=80');
-            background-size: cover;
-            background-attachment: fixed;
-            background-position: center;
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            color: #7f8c8d;
+            margin-bottom: 30px;
+        }
+        
+        .tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .tab {
+            padding: 12px 24px;
+            cursor: pointer;
+            background-color: transparent;
+            border: none;
+            font-size: 1rem;
+            color: #7f8c8d;
+            transition: all 0.3s ease;
             position: relative;
         }
         
-        body::before {
+        .tab:after {
             content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background-color: #3498db;
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+        
+        .tab.active {
+            color: #3498db;
+            font-weight: bold;
+        }
+        
+        .tab.active:after {
+            transform: scaleX(1);
+        }
+        
+        .tab:hover {
+            color: #3498db;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 30px;
+        }
+        
+        .price-card {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+        }
+        
+        .price-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+        
+        .price-card-header {
+            padding: 30px;
+            background-color: #3498db;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .basic .price-card-header {
+            background-color: #3498db;
+        }
+        
+        .standard .price-card-header {
+            background-color: #2ecc71;
+        }
+        
+        .premium .price-card-header {
+            background-color: #9b59b6;
+        }
+        
+        .price-card-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .price-amount {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .price-period {
+            font-size: 1rem;
+            opacity: 0.8;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .price-card-body {
+            padding: 30px;
+        }
+        
+        .feature-list {
+            list-style: none;
+            margin-bottom: 30px;
+        }
+        
+        .feature-list li {
+            margin-bottom: 15px;
+            padding-left: 28px;
+            position: relative;
+        }
+        
+        .feature-list li:before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #2ecc71;
+            font-weight: bold;
+        }
+        
+        .cta-button {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            text-align: center;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            text-decoration: none;
+        }
+        
+        .basic .cta-button {
+            background-color: #3498db;
+        }
+        
+        .standard .cta-button {
+            background-color: #2ecc71;
+        }
+        
+        .premium .cta-button {
+            background-color: #9b59b6;
+        }
+        
+        .cta-button:hover {
+            opacity: 0.9;
+        }
+        
+        .popular-badge {
+            position: absolute;
+            top: 20px;
+            right: -35px;
+            background-color: #e74c3c;
+            color: white;
+            padding: 8px 40px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            transform: rotate(45deg);
+            z-index: 2;
+        }
+        
+        .particles {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(255, 255, 255, 0.85);
-            z-index: -1;
+            pointer-events: none;
+            z-index: 0;
         }
         
-        .rate-card-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 60px 30px;
-        }
-        
-        .rate-card-header {
-            text-align: center;
-            margin-bottom: 60px;
-        }
-        
-        .rate-card-header h1 {
-            font-size: 2.8rem;
-            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            margin-bottom: 20px;
-            font-weight: 700;
-        }
-        
-        .rate-card-header p {
-            color: var(--text-color);
-            font-size: 1.2rem;
-            max-width: 800px;
-            margin: 0 auto;
-            opacity: 0.9;
-        }
-        
-        .rate-cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 35px;
-        }
-        
-        .rate-card {
-            background: var(--card-bg);
-            border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
-            padding: 40px 35px;
-            transition: var(--transition);
-            position: relative;
-            overflow: hidden;
-            border: 1px solid rgba(0, 0, 0, 0.05);
-            backdrop-filter: blur(5px);
-        }
-        
-        .rate-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
-        }
-        
-        .rate-card.popular {
-            border: 2px solid var(--accent-color);
-        }
-        
-        .rate-card.popular::before {
-            content: 'Most Popular';
+        .particle {
             position: absolute;
-            top: 15px;
-            right: -35px;
-            background: var(--accent-color);
-            color: white;
-            padding: 6px 40px;
-            transform: rotate(45deg);
-            font-size: 0.9rem;
-            font-weight: 600;
-            box-shadow: 0 2px 10px rgba(247, 37, 133, 0.3);
+            border-radius: 50%;
+            opacity: 0.5;
+            background-color: rgba(255, 255, 255, 0.3);
         }
         
-        .rate-card h2 {
-            font-size: 1.9rem;
-            margin-bottom: 20px;
-            color: var(--primary-color);
-            font-weight: 600;
-            position: relative;
-            display: inline-block;
-        }
-        
-        .rate-card h2::after {
-            content: '';
-            position: absolute;
-            bottom: -8px;
-            left: 0;
-            width: 50px;
-            height: 3px;
-            background: var(--primary-color);
-            border-radius: 3px;
-        }
-        
-        .rate-card.popular h2::after {
-            background: var(--accent-color);
-        }
-        
-        .rate-card .price {
-            font-size: 2.8rem;
-            font-weight: 700;
-            margin: 25px 0;
-            color: var(--text-color);
+        .toggle-container {
             display: flex;
-            align-items: flex-start;
-        }
-        
-        .rate-card .price span {
-            font-size: 1.1rem;
-            color: var(--light-text);
-            font-weight: 400;
-            margin-top: 10px;
-            margin-left: 5px;
-        }
-        
-        .rate-card .features {
-            margin-bottom: 35px;
-        }
-        
-        .rate-card .features li {
-            list-style: none;
-            padding: 10px 0;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-            display: flex;
-            align-items: center;
-            font-size: 0.98rem;
-        }
-        
-        .rate-card .features li::before {
-            content: '✓';
-            color: var(--primary-color);
-            margin-right: 12px;
-            font-weight: bold;
-            font-size: 1.1rem;
-        }
-        
-        .rate-card.popular .features li::before {
-            color: var(--accent-color);
-        }
-        
-        .rate-card .btn {
-            display: block;
-            text-align: center;
-            padding: 14px 25px;
-            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
-            color: white;
-            text-decoration: none;
-            border-radius: var(--border-radius);
-            font-weight: 600;
-            transition: var(--transition);
-            border: none;
-            cursor: pointer;
-            font-size: 1rem;
-            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
-        }
-        
-        .rate-card .btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(67, 97, 238, 0.4);
-        }
-        
-        .rate-card.popular .btn {
-            background: linear-gradient(45deg, var(--accent-color), var(--light-accent));
-            box-shadow: 0 5px 15px rgba(247, 37, 133, 0.3);
-        }
-        
-        .rate-card.popular .btn:hover {
-            box-shadow: 0 8px 25px rgba(247, 37, 133, 0.4);
-        }
-        
-        /* Custom Package Card */
-        .custom-package {
-            display: flex;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
+            margin-bottom: 50px;
+        }
+        
+        .toggle-label {
+            font-size: 1rem;
+            color: #7f8c8d;
+        }
+        
+        .toggle {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+            margin: 0 15px;
+        }
+        
+        .toggle input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .slider {
+            background-color: #3498db;
+        }
+        
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+        
+        .savings {
+            display: inline-block;
+            background-color: #e74c3c;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            margin-left: 10px;
+            font-weight: bold;
+        }
+        
+        .monthly-price, .annual-price {
+            display: none;
+        }
+        
+        .monthly-price.active, .annual-price.active {
+            display: block;
+        }
+        
+        .compare-table-container {
+            overflow-x: auto;
+            margin-top: 50px;
+        }
+        
+        .compare-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 30px;
+        }
+        
+        .compare-table th, .compare-table td {
+            padding: 15px;
             text-align: center;
-            background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(245,245,255,0.95) 100%);
-            border: 2px dashed var(--primary-color);
+            border-bottom: 1px solid #ddd;
         }
         
-        .custom-package .icon {
-            font-size: 3.5rem;
-            color: var(--primary-color);
+        .compare-table th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+        }
+        
+        .compare-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .compare-table th:first-child, .compare-table td:first-child {
+            text-align: left;
+            font-weight: 500;
+        }
+        
+        .check-icon {
+            color: #2ecc71;
+            font-size: 1.2rem;
+        }
+        
+        .x-icon {
+            color: #e74c3c;
+            font-size: 1.2rem;
+        }
+        
+        .faq-section {
+            margin-top: 80px;
+        }
+        
+        .faq-item {
             margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            overflow: hidden;
         }
         
-        .custom-package h2 {
-            color: var(--primary-color);
+        .faq-question {
+            padding: 20px;
+            background-color: white;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background-color 0.3s ease;
         }
         
-        .custom-package p {
-            margin-bottom: 25px;
-            color: var(--light-text);
+        .faq-question:hover {
+            background-color: #f8f9fa;
         }
         
-        .custom-package .btn {
-            background: linear-gradient(45deg, #4cc9f0, #4895ef);
-            box-shadow: 0 5px 15px rgba(76, 201, 240, 0.3);
+        .faq-question h3 {
+            font-size: 1.1rem;
+            margin: 0;
         }
         
-        .custom-package .btn:hover {
-            box-shadow: 0 8px 25px rgba(76, 201, 240, 0.4);
+        .faq-answer {
+            padding: 0 20px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease, padding 0.5s ease;
         }
         
-        /* PDF specific styles */
-        @media print {
-            body {
-                background: white !important;
-                background-image: none !important;
-            }
-            
-            body::before {
-                display: none;
-            }
-            
-            .rate-card-container {
-                padding: 20px 10px;
-            }
-            
-            .rate-card {
-                break-inside: avoid;
-                page-break-inside: avoid;
-                backdrop-filter: none;
-                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-                margin-bottom: 20px;
-            }
-            
-            .custom-package {
-                background: white !important;
-                border: 2px dashed var(--primary-color) !important;
-            }
-            
-            .rate-card-header {
-                margin-bottom: 30px;
-            }
-            
-            .rate-card-header h1 {
-                font-size: 2.2rem;
-                color: var(--primary-color) !important;
-            }
-            
-            .rate-cards {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 20px;
-            }
+        .faq-item.active .faq-answer {
+            padding: 20px;
+            max-height: 300px;
         }
         
-        @media (max-width: 1024px) {
-            .rate-cards {
-                grid-template-columns: repeat(2, 1fr);
-            }
+        .arrow {
+            transition: transform 0.3s ease;
+        }
+        
+        .faq-item.active .arrow {
+            transform: rotate(180deg);
+        }
+        
+        .price-card-shape {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 100px;
+            height: 100px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            transform: translate(30%, 30%);
+            z-index: 0;
+        }
+        
+        .price-card-shape:before {
+            content: '';
+            position: absolute;
+            top: -30px;
+            left: -30px;
+            width: 80px;
+            height: 80px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
         }
         
         @media (max-width: 768px) {
-            .rate-cards {
+            .card-grid {
                 grid-template-columns: 1fr;
             }
             
-            .rate-card-header h1 {
-                font-size: 2.2rem;
+            .tabs {
+                flex-wrap: wrap;
             }
             
-            .rate-card-header p {
-                font-size: 1.1rem;
+            .tab {
+                padding: 10px 15px;
+                font-size: 0.9rem;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .subtitle {
+                font-size: 1rem;
             }
         }
-        .navbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px 0;
-}
-
-.logo {
-    font-size: 1.8rem;
-    font-weight: 700;
-    color: var(--primary);
-    font-family: 'Playfair Display', serif;
-}
-
-.logo span {
-    color: var(--secondary);
-}
-
-.nav-links {
-    display: flex;
-    list-style: none;
-}
-
-.nav-links li {
-    margin-left: 30px;
-}
-
-.nav-links a {
-    font-weight: 500;
-    transition: color 0.3s ease;
-}
-
-.nav-links a:hover {
-    color: var(--primary);
-}
-
-.mobile-menu-btn {
-    display: none;
-    background: none;
-    border: none;
-    font-size: 1.5rem;
-    cursor: pointer;
-    color: var(--dark);
-}
     </style>
 </head>
 <body>
-    <!-- Header -->
-    <header>
-        <div class="container">
-            <nav class="navbar">
-                <a href="#" class="logo">Nexus<span>Marketing</span></a>
-                <ul class="nav-links">
-                    <li><a href="index.html">Home</a></li>
-                    <li><a href="#services">Services</a></li>
-                    <li><a href="#about">About</a></li>
-                    <li><a href="#portfolio">Portfolio</a></li>
-                    <li><a href="#contact">Contact</a></li>
-                </ul>
-                <button class="mobile-menu-btn">
-                    <i class="fas fa-bars"></i>
-                </button>
-            </nav>
-        </div>
-    </header>
-    <br><br>
-    <div class="rate-card-container">
-        <div class="rate-card-header">
-            <h1>Digital Service Packages</h1>
-            <p>Comprehensive solutions tailored to your business needs. Select the perfect package to elevate your digital presence.</p>
+    <div class="container">
+        <header>
+            <h1>Transparent Pricing Plans</h1>
+            <p class="subtitle">Choose the perfect plan for your needs</p>
+        </header>
+        
+        <div class="toggle-container">
+            <span class="toggle-label">Monthly</span>
+            <label class="toggle">
+                <input type="checkbox" id="billing-toggle">
+                <span class="slider"></span>
+            </label>
+            <span class="toggle-label">Annual</span>
+            <span class="savings">Save 20%</span>
         </div>
         
-        <div class="rate-cards">
-
-            <!-- Custom Package -->
-            <div class="rate-card custom-package">
-                <div class="icon">✏️</div>
-                <h2>Custom Package</h2>
-                <p>Need something tailored to your specific requirements?</p>
-                <div class="price">Let's Talk</div>
-                <ul class="features">
-                    <li>Mix & match services</li>
-                    <li>Flexible pricing options</li>
-                    <li>Personalized solutions</li>
-                    <li>Dedicated account manager</li>
-                </ul>
-                <a href="#contact" class="btn">Request Custom Quote</a>
-            </div>
-            <!-- Web Development Package -->
-            <div class="rate-card">
-                <h2>Web Development</h2>
-                <div class="price">$1,299<span> / project</span></div>
-                <ul class="features">
-                    <li>Custom responsive website design</li>
-                    <li>CMS integration (WordPress, etc.)</li>
-                    <li>E-commerce functionality</li>
-                    <li>3 months free maintenance</li>
-                    <li>SEO-friendly structure</li>
-                    <li>Monthly performance reports</li>
-                    <li>24/7 technical support</li>
-                </ul>
-                <a href="#contact" class="btn">Get Started</a>
-            </div>
-            
-            <!-- Branding Package -->
-            <div class="rate-card popular">
-                <h2>Branding & Design</h2>
-                <div class="price">$1,899<span> / project</span></div>
-                <ul class="features">
-                    <li>Professional logo design (3 concepts)</li>
-                    <li>Brand identity development</li>
-                    <li>Color palette & typography</li>
-                    <li>Brand style guide</li>
-                    <li>Business card design</li>
-                    <li>Letterhead & envelope design</li>
-                    <li>Social media branding kit</li>
-                </ul>
-                <a href="#contact" class="btn">Get Started</a>
-            </div>
-            
-            <!-- System Development Package -->
-            <div class="rate-card">
-                <h2>System Development</h2>
-                <div class="price">$2,499<span> / project</span></div>
-                <ul class="features">
-                    <li>Custom software solution</li>
-                    <li>Database design & implementation</li>
-                    <li>API development & integration</li>
-                    <li>6 months free maintenance</li>
-                    <li>Cloud deployment</li>
-                    <li>Quarterly system audits</li>
-                    <li>Priority technical support</li>
-                </ul>
-                <a href="#contact" class="btn">Get Started</a>
-            </div>
-            
-            <!-- Social Media Package -->
-            <div class="rate-card">
-                <h2>Social Media</h2>
-                <div class="price">$799<span> / month</span></div>
-                <ul class="features">
-                    <li>3 social platforms management</li>
-                    <li>12 premium posts monthly</li>
-                    <li>Daily community engagement</li>
-                    <li>Content strategy development</li>
-                    <li>Monthly analytics report</li>
-                    <li>Ad campaign management</li>
-                    <li>Competitor benchmarking</li>
-                </ul>
-                <a href="#contact" class="btn">Get Started</a>
-            </div>
-            
-            <!-- SEO Package -->
-            <div class="rate-card">
-                <h2>SEO & Analytics</h2>
-                <div class="price">$999<span> / month</span></div>
-                <ul class="features">
-                    <li>Comprehensive keyword research</li>
-                    <li>On-page & technical SEO</li>
-                    <li>Content optimization strategy</li>
-                    <li>Monthly ranking reports</li>
-                    <li>Google Analytics dashboard</li>
-                    <li>Conversion rate optimization</li>
-                    <li>Competitor SEO analysis</li>
-                </ul>
-                <a href="#contact" class="btn">Get Started</a>
+        <div class="tabs">
+            <button class="tab active" data-tab="individual">Individual</button>
+            <button class="tab" data-tab="business">Business</button>
+            <button class="tab" data-tab="enterprise">Enterprise</button>
+        </div>
+        
+        <div class="tab-content active" id="individual">
+            <div class="card-grid">
+                <div class="price-card basic">
+                    <div class="price-card-header">
+                        <div class="particles"></div>
+                        <h2 class="price-card-title">Basic</h2>
+                        <div class="monthly-price active">
+                            <div class="price-amount">$9.99</div>
+                            <div class="price-period">per month</div>
+                        </div>
+                        <div class="annual-price">
+                            <div class="price-amount">$95.90</div>
+                            <div class="price-period">per year</div>
+                        </div>
+                        <div class="price-card-shape"></div>
+                    </div>
+                    <div class="price-card-body">
+                        <ul class="feature-list">
+                            <li>10 projects</li>
+                            <li>5GB storage</li>
+                            <li>Basic support</li>
+                            <li>1 user</li>
+                        </ul>
+                        <a href="#" class="cta-button">Get Started</a>
+                    </div>
+                </div>
+                
+                <div class="price-card standard">
+                    <div class="popular-badge">POPULAR</div>
+                    <div class="price-card-header">
+                        <div class="particles"></div>
+                        <h2 class="price-card-title">Standard</h2>
+                        <div class="monthly-price active">
+                            <div class="price-amount">$19.99</div>
+                            <div class="price-period">per month</div>
+                        </div>
+                        <div class="annual-price">
+                            <div class="price-amount">$191.90</div>
+                            <div class="price-period">per year</div>
+                        </div>
+                        <div class="price-card-shape"></div>
+                    </div>
+                    <div class="price-card-body">
+                        <ul class="feature-list">
+                            <li>25 projects</li>
+                            <li>15GB storage</li>
+                            <li>Priority support</li>
+                            <li>3 users</li>
+                            <li>Advanced features</li>
+                        </ul>
+                        <a href="#" class="cta-button">Get Started</a>
+                    </div>
+                </div>
+                
+                <div class="price-card premium">
+                    <div class="price-card-header">
+                        <div class="particles"></div>
+                        <h2 class="price-card-title">Premium</h2>
+                        <div class="monthly-price active">
+                            <div class="price-amount">$29.99</div>
+                            <div class="price-period">per month</div>
+                        </div>
+                        <div class="annual-price">
+                            <div class="price-amount">$287.90</div>
+                            <div class="price-period">per year</div>
+                        </div>
+                        <div class="price-card-shape"></div>
+                    </div>
+                    <div class="price-card-body">
+                        <ul class="feature-list">
+                            <li>Unlimited projects</li>
+                            <li>50GB storage</li>
+                            <li>24/7 Premium support</li>
+                            <li>10 users</li>
+                            <li>Advanced features</li>
+                            <li>API access</li>
+                        </ul>
+                        <a href="#" class="cta-button">Get Started</a>
+                    </div>
+                </div>
             </div>
             
-            <!-- Campaign Management Package -->
-            <div class="rate-card">
-                <h2>Campaign Management</h2>
-                <div class="price">$1,499<span> / campaign</span></div>
-                <ul class="features">
-                    <li>Custom campaign strategy</li>
-                    <li>Multi-channel execution</li>
-                    <li>Creative assets development</li>
-                    <li>Audience segmentation</li>
-                    <li>Real-time performance tracking</li>
-                    <li>A/B testing implementation</li>
-                    <li>Detailed ROI analysis</li>
-                </ul>
-                <a href="#contact" class="btn">Get Started</a>
+            <div class="compare-table-container">
+                <h2>Compare Plans</h2>
+                <table class="compare-table">
+                    <thead>
+                        <tr>
+                            <th>Features</th>
+                            <th>Basic</th>
+                            <th>Standard</th>
+                            <th>Premium</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Projects</td>
+                            <td>10</td>
+                            <td>25</td>
+                            <td>Unlimited</td>
+                        </tr>
+                        <tr>
+                            <td>Storage</td>
+                            <td>5GB</td>
+                            <td>15GB</td>
+                            <td>50GB</td>
+                        </tr>
+                        <tr>
+                            <td>Users</td>
+                            <td>1</td>
+                            <td>3</td>
+                            <td>10</td>
+                        </tr>
+                        <tr>
+                            <td>Custom Domain</td>
+                            <td><span class="x-icon">✗</span></td>
+                            <td><span class="check-icon">✓</span></td>
+                            <td><span class="check-icon">✓</span></td>
+                        </tr>
+                        <tr>
+                            <td>Analytics</td>
+                            <td><span class="x-icon">✗</span></td>
+                            <td><span class="check-icon">✓</span></td>
+                            <td><span class="check-icon">✓</span></td>
+                        </tr>
+                        <tr>
+                            <td>API Access</td>
+                            <td><span class="x-icon">✗</span></td>
+                            <td><span class="x-icon">✗</span></td>
+                            <td><span class="check-icon">✓</span></td>
+                        </tr>
+                        <tr>
+                            <td>24/7 Support</td>
+                            <td><span class="x-icon">✗</span></td>
+                            <td><span class="x-icon">✗</span></td>
+                            <td><span class="check-icon">✓</span></td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
-            
-            <!-- Email Marketing Package -->
-            <div class="rate-card">
-                <h2>Email Marketing</h2>
-                <div class="price">$599<span> / month</span></div>
-                <ul class="features">
-                    <li>Custom email template design</li>
-                    <li>Subscriber list management</li>
-                    <li>Automation workflow setup</li>
-                    <li>2 monthly newsletters</li>
-                    <li>Performance analytics</li>
-                    <li>A/B testing of subject lines</li>
-                    <li>Segmentation strategy</li>
-                </ul>
-                <a href="#contact" class="btn">Get Started</a>
+        </div>
+        
+        <div class="tab-content" id="business">
+            <div class="card-grid">
+                <div class="price-card basic">
+                    <div class="price-card-header">
+                        <div class="particles"></div>
+                        <h2 class="price-card-title">Startup</h2>
+                        <div class="monthly-price active">
+                            <div class="price-amount">$49.99</div>
+                            <div class="price-period">per month</div>
+                        </div>
+                        <div class="annual-price">
+                            <div class="price-amount">$479.90</div>
+                            <div class="price-period">per year</div>
+                        </div>
+                        <div class="price-card-shape"></div>
+                    </div>
+                    <div class="price-card-body">
+                        <ul class="feature-list">
+                            <li>25 projects</li>
+                            <li>25GB storage</li>
+                            <li>Business support</li>
+                            <li>10 users</li>
+                            <li>Analytics dashboard</li>
+                        </ul>
+                        <a href="#" class="cta-button">Get Started</a>
+                    </div>
+                </div>
+                
+                <div class="price-card standard">
+                    <div class="popular-badge">POPULAR</div>
+                    <div class="price-card-header">
+                        <div class="particles"></div>
+                        <h2 class="price-card-title">Growth</h2>
+                        <div class="monthly-price active">
+                            <div class="price-amount">$99.99</div>
+                            <div class="price-period">per month</div>
+                        </div>
+                        <div class="annual-price">
+                            <div class="price-amount">$959.90</div>
+                            <div class="price-period">per year</div>
+                        </div>
+                        <div class="price-card-shape"></div>
+                    </div>
+                    <div class="price-card-body">
+                        <ul class="feature-list">
+                            <li>50 projects</li>
+                            <li>100GB storage</li>
+                            <li>Priority support</li>
+                            <li>25 users</li>
+                            <li>Advanced analytics</li>
+                            <li>API access</li>
+                        </ul>
+                        <a href="#" class="cta-button">Get Started</a>
+                    </div>
+                </div>
+                
+                <div class="price-card premium">
+                    <div class="price-card-header">
+                        <div class="particles"></div>
+                        <h2 class="price-card-title">Scale</h2>
+                        <div class="monthly-price active">
+                            <div class="price-amount">$199.99</div>
+                            <div class="price-period">per month</div>
+                        </div>
+                        <div class="annual-price">
+                            <div class="price-amount">$1,919.90</div>
+                            <div class="price-period">per year</div>
+                        </div>
+                        <div class="price-card-shape"></div>
+                    </div>
+                    <div class="price-card-body">
+                        <ul class="feature-list">
+                            <li>Unlimited projects</li>
+                            <li>500GB storage</li>
+                            <li>24/7 Premium support</li>
+                            <li>Unlimited users</li>
+                            <li>Custom analytics</li>
+                            <li>Advanced API access</li>
+                            <li>Dedicated account manager</li>
+                        </ul>
+                        <a href="#" class="cta-button">Get Started</a>
+                    </div>
+                </div>
             </div>
-            
-            
+        </div>
+        
+        <div class="tab-content" id="enterprise">
+            <div class="card-grid">
+                <div class="price-card premium" style="grid-column: span 3;">
+                    <div class="price-card-header">
+                        <div class="particles"></div>
+                        <h2 class="price-card-title">Enterprise</h2>
+                        <div class="price-amount">Custom</div>
+                        <div class="price-period">tailored to your needs</div>
+                        <div class="price-card-shape"></div>
+                    </div>
+                    <div class="price-card-body">
+                        <ul class="feature-list">
+                            <li>Unlimited everything</li>
+                            <li>Custom implementation</li>
+                            <li>Dedicated support team</li>
+                            <li>Custom integrations</li>
+                            <li>Service Level Agreement</li>
+                            <li>24/7 phone support</li>
+                            <li>Onboarding assistance</li>
+                            <li>Customized training</li>
+                        </ul>
+                        <a href="#" class="cta-button">Contact Sales</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="faq-section">
+            <h2>Frequently Asked Questions</h2>
+            <div class="faq-item">
+                <div class="faq-question">
+                    <h3>Can I change my plan later?</h3>
+                    <span class="arrow">▼</span>
+                </div>
+                <div class="faq-answer">
+                    <p>Yes, you can upgrade or downgrade your plan at any time. When upgrading, you'll be billed the prorated difference immediately. When downgrading, the new rate will take effect at the start of your next billing cycle.</p>
+                </div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question">
+                    <h3>What payment methods do you accept?</h3>
+                    <span class="arrow">▼</span>
+                </div>
+                <div class="faq-answer">
+                    <p>We accept all major credit cards, including Visa, MasterCard, American Express, and Discover. We also support payments via PayPal. For Enterprise plans, we can arrange for bank transfers or invoicing.</p>
+                </div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question">
+                    <h3>Is there a free trial?</h3>
+                    <span class="arrow">▼</span>
+                </div>
+                <div class="faq-answer">
+                    <p>Yes, we offer a 14-day free trial on all our plans. No credit card is required to start your trial. At the end of your trial, you can choose the plan that best fits your needs.</p>
+                </div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question">
+                    <h3>What happens if I exceed my plan limits?</h3>
+                    <span class="arrow">▼</span>
+                </div>
+                <div class="faq-answer">
+                    <p>If you exceed your plan's limits, we won't cut you off immediately. We'll notify you and give you the option to upgrade to a higher plan. If you continue to exceed your limits without upgrading, we may limit some features until you upgrade or reduce your usage.</p>
+                </div>
+            </div>
         </div>
     </div>
+
+    <script>
+        // Tab switching functionality
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Remove active class from all tabs
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                
+                // Add active class to clicked tab
+                tab.classList.add('active');
+                
+                // Hide all tab content
+                document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+                
+                // Show the corresponding tab content
+                const tabId = tab.getAttribute('data-tab');
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+        
+        // Billing toggle functionality
+        const billingToggle = document.getElementById('billing-toggle');
+        billingToggle.addEventListener('change', () => {
+            const monthlyPrices = document.querySelectorAll('.monthly-price');
+            const annualPrices = document.querySelectorAll('.annual-price');
+            
+            if (billingToggle.checked) {
+                // Show annual prices
+                monthlyPrices.forEach(price => price.classList.remove('active'));
+                annualPrices.forEach(price => price.classList.add('active'));
+            } else {
+                // Show monthly prices
+                monthlyPrices.forEach(price => price.classList.add('active'));
+                annualPrices.forEach(price => price.classList.remove('active'));
+            }
+        });
+        
+        // FAQ accordion functionality
+        document.querySelectorAll('.faq-question').forEach(question => {
+            question.addEventListener('click', () => {
+                const faqItem = question.parentElement;
+                faqItem.classList.toggle('active');
+            });
+        });
+        
+        // Particle animation for price card headers
+        function createParticles() {
+            const headerElements = document.querySelectorAll('.price-card-header');
+            
+            headerElements.forEach(header => {
+                const particlesContainer = header.querySelector('.particles');
+                const headerColor = getComputedStyle(header).backgroundColor;
+                
+                // Clear existing particles
+                particlesContainer.innerHTML = '';
+                
+                // Create particles
+                for (let i = 0; i < 15; i++) {
+                    const particle = document.createElement('div');
+                    particle.classList.add('particle');
+                    
+                    // Random size between 5px and 20px
+                    const size = Math.random() * 15 + 5;
+                    particle.style.width = `${size}px`;
+                    particle.style.height = `${size}px`;
+                    
+                    // Random position
+                    const left = Math.random() * 100;
+                    const top = Math.random() * 100;
+                    particle.style.left = `${left}%`;
+                    particle.style.top = `${top}%`;
+                    
+                    // Set particle color based on header color but with opacity
+                    particle.style.backgroundColor = 'rgba(255, 255, 255, 0.3)';
+                    
+                    // Add particle to container
+                    particlesContainer.appendChild(particle);
+                    
+                    // Animate particle
+                    animateParticle(particle);
+                }
+            });
+        }
+        
+        function animateParticle(particle) {
+            // Initial position
+            const startX = parseFloat(particle.style.left);
+            const startY = parseFloat(particle.style.top);
+            
+            // Random movement range
+            const rangeX = Math.random() * 10 - 5; // -5 to 5
+            const rangeY = Math.random() * 10 - 5; // -5 to 5
+            
+            // Random duration between 3 and 8 seconds
+            const duration = Math.random() * 5000 + 3000;
+            
+            let startTime;
+            
+            function move(timestamp) {
+                if (!startTime) startTime = timestamp;
+                const elapsed = timestamp - startTime;
+                
+                // Calculate progress (0 to 1)
+                const progress = elapsed / duration;
+                
+                // Calculate current position using sine wave for smooth back-and-forth
+                const currentX = startX + Math.sin(progress * Math.PI * 2) * rangeX;
+                const currentY = startY + Math.sin(progress * Math.PI * 2) * rangeY;
+                
+                // Apply new position
+                particle.style.left = `${currentX}%`;
+                particle.style.top = `${currentY}%`;
+                
+                // Continue animation if not complete
+                if (progress < 1) {
+                    requestAnimationFrame(move);
+                } else {
+                    // Restart animation
+                    startTime = null;
+                    requestAnimationFrame(move);
+                }
+            }
+            
+            requestAnimationFrame(move);
+        }
+        
+        // Initialize particles on load
+        window.addEventListener('load', () => {
+            createParticles();
+            
+            // Price card hover animations
+            const priceCards = document.querySelectorAll('.price-card');
+            
+            priceCards.forEach(card => {
+                card.addEventListener('mouseenter', () => {
+                    const header = card.querySelector('.price-card-header');
+                    const particles = header.querySelectorAll('.particle');
+                    
+                    // Make particles move faster and bigger on hover
+                    particles.forEach(particle => {
+                        const currentSize = parseFloat(particle.style.width);
+                        particle.style.width = `${currentSize * 1.5}px`;
+                        particle.style.height = `${currentSize * 1.5}px`;
+                        particle.style.transition = 'width 0.3s ease, height 0.3s ease';
+                    });
+                });
+                
+                card.addEventListener('mouseleave', () => {
+                    const header = card.querySelector('.price-card-header');
+                    const particles = header.querySelectorAll('.particle');
+                    
+                    // Return particles to normal
+                    particles.forEach(particle => {
+                        const currentSize = parseFloat(particle.style.width);
+                        particle.style.width = `${currentSize / 1.5}px`;
+                        particle.style.height = `${currentSize / 1.5}px`;
+                    });
+                });
+            });
+        });
+        
+        // Animate elements when they come into view
+        function animateOnScroll() {
+            const elements = document.querySelectorAll('.price-card, .faq-item, h1, .subtitle, .tabs');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.1 });
+            
+            elements.forEach(element => {
+                // Set initial state
+                element.style.opacity = '0';
+                element.style.transform = 'translateY(20px)';
+                element.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                
+                observer.observe(element);
+            });
+        }
+        
+        // Initialize scroll animations
+        window.addEventListener('DOMContentLoaded', () => {
+            animateOnScroll();
+        });
+        
+        // Add animations to CTA buttons
+        document.querySelectorAll('.cta-button').forEach(button => {
+            button.addEventListener('mouseenter', () => {
+                button.style.transform = 'scale(1.05)';
+                button.style.transition = 'transform 0.3s ease, background-color 0.3s ease';
+            });
+            
+            button.addEventListener('mouseleave', () => {
+                button.style.transform = 'scale(1)';
+            });
+            
+            button.addEventListener('click', (e) => {
+                e.preventDefault();
+                
+                // Create ripple effect
+                const ripple = document.createElement('span');
+                ripple.style.position = 'absolute';
+                ripple.style.borderRadius = '50%';
+                ripple.style.backgroundColor = 'rgba(255, 255, 255, 0.7)';
+                ripple.style.transform = 'scale(0)';
+                ripple.style.animation = 'ripple 0.6s linear';
+                ripple.style.pointerEvents = 'none';
+                
+                // Get click position relative to button
+                const rect = button.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                ripple.style.left = `${x}px`;
+                ripple.style.top = `${y}px`;
+                
+                // Add ripple to button
+                button.style.position = 'relative';
+                button.style.overflow = 'hidden';
+                button.appendChild(ripple);
+                
+                // Remove ripple after animation
+                setTimeout(() => {
+                    ripple.remove();
+                }, 600);
+            });
+        });
+        
+        // Add keyframe for ripple animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes ripple {
+                to {
+                    transform: scale(4);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+        
+        // Add floating animation to popular badge
+        function animatePopularBadge() {
+            const badges = document.querySelectorAll('.popular-badge');
+            
+            badges.forEach(badge => {
+                let startY = 0;
+                let direction = 1;
+                const maxOffset = 5;
+                const speed = 0.05;
+                
+                function animate() {
+                    startY += speed * direction;
+                    
+                    if (startY >= maxOffset) {
+                        direction = -1;
+                    } else if (startY <= 0) {
+                        direction = 1;
+                    }
+                    
+                    badge.style.transform = `rotate(45deg) translateY(${startY}px)`;
+                    requestAnimationFrame(animate);
+                }
+                
+                animate();
+            });
+        }
+        
+        // Initialize popular badge animation
+        window.addEventListener('load', () => {
+            animatePopularBadge();
+        });
+        
+        // Add tab switching animation
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Get the active tab content
+                const tabId = tab.getAttribute('data-tab');
+                const activeContent = document.getElementById(tabId);
+                
+                // Add entrance animation class
+                activeContent.style.animation = 'none';
+                setTimeout(() => {
+                    activeContent.style.animation = 'fadeIn 0.5s ease';
+                }, 10);
+            });
+        });
+        
+        // Add comparison table row highlight on hover
+        document.querySelectorAll('.compare-table tr').forEach(row => {
+            if (!row.parentElement.tagName === 'THEAD') {
+                row.addEventListener('mouseenter', () => {
+                    row.style.backgroundColor = '#f0f7ff';
+                    row.style.transition = 'background-color 0.3s ease';
+                });
+                
+                row.addEventListener('mouseleave', () => {
+                    row.style.backgroundColor = '';
+                });
+            }
+        });
+        
+        // Add smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                const targetId = this.getAttribute('href');
+                if (targetId === '#') return;
+                
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    targetElement.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+        
+        // Add random particle movement on price card hover
+        document.querySelectorAll('.price-card').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                const header = card.querySelector('.price-card-header');
+                
+                // Create new random particles
+                for (let i = 0; i < 5; i++) {
+                    const particle = document.createElement('div');
+                    particle.classList.add('particle');
+                    particle.classList.add('temp-particle');
+                    
+                    // Random size between 3px and 8px
+                    const size = Math.random() * 5 + 3;
+                    particle.style.width = `${size}px`;
+                    particle.style.height = `${size}px`;
+                    
+                    // Start position from center
+                    particle.style.left = '50%';
+                    particle.style.top = '50%';
+                    
+                    // Set color
+                    particle.style.backgroundColor = 'rgba(255, 255, 255, 0.8)';
+                    
+                    // Add to container
+                    header.querySelector('.particles').appendChild(particle);
+                    
+                    // Animate outward
+                    const angle = Math.random() * Math.PI * 2; // Random angle
+                    const distance = Math.random() * 100 + 50; // Random distance
+                    const duration = Math.random() * 1000 + 500; // Random duration
+                    
+                    const targetX = 50 + Math.cos(angle) * distance;
+                    const targetY = 50 + Math.sin(angle) * distance;
+                    
+                    particle.animate([
+                        { left: '50%', top: '50%', opacity: 1 },
+                        { left: `${targetX}%`, top: `${targetY}%`, opacity: 0 }
+                    ], {
+                        duration: duration,
+                        easing: 'ease-out',
+                        fill: 'forwards'
+                    });
+                    
+                    // Remove after animation
+                    setTimeout(() => {
+                        particle.remove();
+                    }, duration);
+                }
+            });
+        });
+        
+        // Add pulse animation to popular plans
+        function addPulseEffect() {
+            const popularCards = document.querySelectorAll('.price-card:has(.popular-badge)');
+            
+            popularCards.forEach(card => {
+                // Add subtle pulse effect
+                setInterval(() => {
+                    card.animate([
+                        { boxShadow: '0 10px 30px rgba(0, 0, 0, 0.1)' },
+                        { boxShadow: '0 15px 40px rgba(0, 0, 0, 0.2)' },
+                        { boxShadow: '0 10px 30px rgba(0, 0, 0, 0.1)' }
+                    ], {
+                        duration: 2000,
+                        iterations: 1
+                    });
+                }, 3000);
+            });
+        }
+        
+        // Initialize pulse effect
+        window.addEventListener('load', () => {
+            addPulseEffect();
+        });
+    </script>
 </body>
 </html>
